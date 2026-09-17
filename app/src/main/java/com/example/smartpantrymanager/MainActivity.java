@@ -24,5 +24,6 @@ public class MainActivity extends AppCompatActivity {
         if (dbHelper.isRecipeTableEmpty()) {
             SeedData.populate(dbHelper);
         }
+
     }
 }
