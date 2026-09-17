@@ -117,5 +117,96 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.delete(TABLE_PANTRY, "id = ?", new String[]{String.valueOf(id)});
         db.close();
     }
+    // ---------- Insert a recipe (used by seed data) ----------
+    public long insertRecipe(String name, String instructions) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("name", name);
+        values.put("instructions", instructions);
+
+        long newRowId = db.insert(TABLE_RECIPES, null, values);
+        db.close();
+        return newRowId;
+    }
+
+    // ---------- Insert a recipe ingredient requirement (used by seed data) ----------
+    public long insertRecipeIngredient(int recipeId, String ingredientName, double requiredQuantity, String unit) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("recipe_id", recipeId);
+        values.put("ingredient_name", ingredientName);
+        values.put("required_quantity", requiredQuantity);
+        values.put("unit", unit);
+
+        long newRowId = db.insert(TABLE_RECIPE_INGREDIENTS, null, values);
+        db.close();
+        return newRowId;
+    }
+
+    // ---------- Get all recipes (without their ingredients attached yet) ----------
+    public List<Recipe> getAllRecipes() {
+        List<Recipe> recipes = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(TABLE_RECIPES, null, null, null, null, null, "name ASC");
+
+        if (cursor.moveToFirst()) {
+            do {
+                int id = cursor.getInt(cursor.getColumnIndexOrThrow("id"));
+                String name = cursor.getString(cursor.getColumnIndexOrThrow("name"));
+                String instructions = cursor.getString(cursor.getColumnIndexOrThrow("instructions"));
+                recipes.add(new Recipe(id, name, instructions));
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        db.close();
+        return recipes;
+    }
+
+    // ---------- Get the required ingredients for one specific recipe ----------
+    public List<RecipeIngredient> getIngredientsForRecipe(int recipeId) {
+        List<RecipeIngredient> ingredients = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(TABLE_RECIPE_INGREDIENTS, null,
+                "recipe_id = ?", new String[]{String.valueOf(recipeId)},
+                null, null, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                int id = cursor.getInt(cursor.getColumnIndexOrThrow("id"));
+                int recId = cursor.getInt(cursor.getColumnIndexOrThrow("recipe_id"));
+                String ingredientName = cursor.getString(cursor.getColumnIndexOrThrow("ingredient_name"));
+                double requiredQty = cursor.getDouble(cursor.getColumnIndexOrThrow("required_quantity"));
+                String unit = cursor.getString(cursor.getColumnIndexOrThrow("unit"));
+                ingredients.add(new RecipeIngredient(id, recId, ingredientName, requiredQty, unit));
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        db.close();
+        return ingredients;
+    }
+
+    // ---------- Get all recipes WITH their ingredients attached ----------
+// This is the method the Suggested Recipes screen will actually call
+    public List<Recipe> getAllRecipesWithIngredients() {
+        List<Recipe> recipes = getAllRecipes();
+        for (Recipe recipe : recipes) {
+            List<RecipeIngredient> ingredients = getIngredientsForRecipe(recipe.getId());
+            recipe.setRequiredIngredients(ingredients);
+        }
+        return recipes;
+    }
+
+    // ---------- Check if recipes table is empty (used to decide whether to seed) ----------
+    public boolean isRecipeTableEmpty() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT COUNT(*) FROM " + TABLE_RECIPES, null);
+        boolean isEmpty = true;
+        if (cursor.moveToFirst()) {
+            isEmpty = cursor.getInt(0) == 0;
+        }
+        cursor.close();
+        db.close();
+        return isEmpty;
+    }
 
 }
