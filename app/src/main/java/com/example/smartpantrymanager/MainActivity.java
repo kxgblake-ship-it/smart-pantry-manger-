@@ -11,7 +11,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
+import androidx.annotation.NonNull;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.List;
@@ -92,5 +92,23 @@ public class MainActivity extends AppCompatActivity implements PantryAdapter.OnI
     public void onDeleteClicked(PantryItem item) {
         dbHelper.deletePantryItem(item.getId());
         loadPantryItems(); // refresh the list immediately after deleting
+    }
+    @Override
+    public boolean onCreateOptionsMenu(android.view.Menu menu) {
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull android.view.MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.action_suggested_recipes) {
+            startActivity(new Intent(MainActivity.this, SuggestedRecipeActivity.class));
+            return true;
+        } else if (id == R.id.action_settings) {
+            // We'll wire this up once the Settings screen exists
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }
