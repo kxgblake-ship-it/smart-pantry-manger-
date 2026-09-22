@@ -3,7 +3,7 @@ package com.example.smartpantrymanager;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
-
+import android.content.Intent;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
@@ -52,7 +52,8 @@ public class MainActivity extends AppCompatActivity implements PantryAdapter.OnI
         recyclerView.setAdapter(adapter);
 
         fabAddItem.setOnClickListener(v -> {
-            // We'll connect this to the Add/Edit screen in the next step
+            Intent intent = new Intent(MainActivity.this, AddEditIngredientActivity.class);
+            startActivity(intent);
         });
     }
 
@@ -78,7 +79,13 @@ public class MainActivity extends AppCompatActivity implements PantryAdapter.OnI
 
     @Override
     public void onEditClicked(PantryItem item) {
-        // We'll connect this to the Add/Edit screen in the next step
+        Intent intent = new Intent(MainActivity.this, AddEditIngredientActivity.class);
+        intent.putExtra(AddEditIngredientActivity.EXTRA_ITEM_ID, item.getId());
+        intent.putExtra(AddEditIngredientActivity.EXTRA_ITEM_NAME, item.getName());
+        intent.putExtra(AddEditIngredientActivity.EXTRA_ITEM_QUANTITY, item.getQuantity());
+        intent.putExtra(AddEditIngredientActivity.EXTRA_ITEM_UNIT, item.getUnit());
+        intent.putExtra(AddEditIngredientActivity.EXTRA_ITEM_EXPIRY, item.getExpiryDate());
+        startActivity(intent);
     }
 
     @Override
