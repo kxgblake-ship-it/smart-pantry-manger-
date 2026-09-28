@@ -1,5 +1,6 @@
 package com.example.smartpantrymanager;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
@@ -60,6 +61,12 @@ public class MainActivity extends AppCompatActivity implements PantryAdapter.OnI
     @Override
     protected void onResume() {
         super.onResume();
+
+        // Read the Settings toggle every time this screen appears, so a change
+        // made in Settings shows up as soon as you come back
+        SharedPreferences prefs = getSharedPreferences(SettingsActivity.PREFS_NAME, MODE_PRIVATE);
+        adapter.setHighlightExpiring(prefs.getBoolean(SettingsActivity.KEY_EXPIRY_ALERTS, false));
+
         loadPantryItems(); // refresh every time this screen becomes visible
     }
 

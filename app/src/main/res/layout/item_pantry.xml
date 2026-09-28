@@ -29,6 +29,14 @@
             android:textColor="#666666"
             tools:text="3 unit" />
 
+        <TextView
+            android:id="@+id/textItemExpiry"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="13sp"
+            android:visibility="gone"
+            tools:text="Expiring soon: 2026-10-01" />
+
     </LinearLayout>
 
     <ImageButton

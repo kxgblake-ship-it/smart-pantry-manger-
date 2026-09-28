@@ -6,7 +6,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Locale;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class AddEditIngredientActivity extends AppCompatActivity {
@@ -84,6 +86,10 @@ public class AddEditIngredientActivity extends AppCompatActivity {
             showError("Unit is required (e.g. g, ml, unit).");
             return;
         }
+        if (!expiryDate.isEmpty() && !isValidDate(expiryDate)) {
+            showError("Expiry date must look like 2026-10-01 (year-month-day).");
+            return;
+        }
 
         // Expiry date is optional - store null if left blank
         String expiryToSave = expiryDate.isEmpty() ? null : expiryDate;
@@ -101,5 +107,17 @@ public class AddEditIngredientActivity extends AppCompatActivity {
     private void showError(String message) {
         textError.setText(message);
         textError.setVisibility(View.VISIBLE);
+    }
+
+    // Checks the date is a real date in yyyy-MM-dd format (e.g. rejects 2026-13-45)
+    private boolean isValidDate(String date) {
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+        format.setLenient(false); // strict: don't quietly "fix" impossible dates
+        try {
+            format.parse(date);
+            return true;
+        } catch (ParseException e) {
+            return false;
+        }
     }
 }
