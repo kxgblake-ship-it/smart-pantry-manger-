@@ -27,14 +27,31 @@ public class IngredientMatcher {
     public static String baseUnit(String unit) {
         String u = normalizeUnit(unit);
         switch (u) {
-            case "g": case "gram": case "grams":
-            case "kg": case "kgs": case "kilogram": case "kilograms":
+            case "g":
+            case "gram":
+            case "grams":
+            case "kg":
+            case "kgs":
+            case "kilogram":
+            case "kilograms":
                 return "g";
-            case "ml": case "millilitre": case "millilitres":
-            case "milliliter": case "milliliters":
-            case "l": case "litre": case "litres": case "liter": case "liters":
+            case "ml":
+            case "millilitre":
+            case "millilitres":
+            case "milliliter":
+            case "milliliters":
+            case "l":
+            case "litre":
+            case "litres":
+            case "liter":
+            case "liters":
                 return "ml";
-            case "unit": case "units": case "piece": case "pieces": case "pc": case "pcs":
+            case "unit":
+            case "units":
+            case "piece":
+            case "pieces":
+            case "pc":
+            case "pcs":
                 return "unit";
             default:
                 return u;
@@ -45,8 +62,15 @@ public class IngredientMatcher {
     public static double toBaseQuantity(double quantity, String unit) {
         String u = normalizeUnit(unit);
         switch (u) {
-            case "kg": case "kgs": case "kilogram": case "kilograms":
-            case "l": case "litre": case "litres": case "liter": case "liters":
+            case "kg":
+            case "kgs":
+            case "kilogram":
+            case "kilograms":
+            case "l":
+            case "litre":
+            case "litres":
+            case "liter":
+            case "liters":
                 return quantity * 1000;
             default:
                 return quantity;

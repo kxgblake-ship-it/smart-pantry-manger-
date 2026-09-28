@@ -26,6 +26,7 @@ public class PantryAdapter extends RecyclerView.Adapter<PantryAdapter.PantryView
     // Interface so MainActivity can be told when edit/delete is tapped on a row
     public interface OnItemActionListener {
         void onEditClicked(PantryItem item);
+
         void onDeleteClicked(PantryItem item);
     }
 

@@ -1,59 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:padding="16dp"
-    android:gravity="center_vertical">
+    android:layout_margin="6dp"
+    app:cardBackgroundColor="@color/white"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="2dp">
 
     <LinearLayout
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:orientation="vertical">
+        android:orientation="horizontal"
+        android:padding="16dp"
+        android:gravity="center_vertical">
 
-        <TextView
-            android:id="@+id/textItemName"
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/textItemName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="@color/green_dark"
+                tools:text="Tomato" />
+
+            <TextView
+                android:id="@+id/textItemQuantity"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:textColor="@color/text_secondary"
+                tools:text="3 unit" />
+
+            <TextView
+                android:id="@+id/textItemExpiry"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="13sp"
+                android:visibility="gone"
+                tools:text="Expiring soon: 2026-10-01" />
+
+        </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/buttonEdit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            tools:text="Tomato" />
+            android:src="@android:drawable/ic_menu_edit"
+            app:tint="@color/green_primary"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Edit item"
+            android:layout_marginEnd="8dp" />
 
-        <TextView
-            android:id="@+id/textItemQuantity"
+        <ImageButton
+            android:id="@+id/buttonDelete"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="14sp"
-            android:textColor="#666666"
-            tools:text="3 unit" />
-
-        <TextView
-            android:id="@+id/textItemExpiry"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="13sp"
-            android:visibility="gone"
-            tools:text="Expiring soon: 2026-10-01" />
-
+            android:src="@android:drawable/ic_menu_delete"
+            app:tint="#C62828"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Delete item" />
     </LinearLayout>
-
-    <ImageButton
-        android:id="@+id/buttonEdit"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@android:drawable/ic_menu_edit"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:contentDescription="Edit item"
-        android:layout_marginEnd="8dp" />
-
-    <ImageButton
-        android:id="@+id/buttonDelete"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@android:drawable/ic_menu_delete"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:contentDescription="Delete item" />
-
-</LinearLayout>
+</com.google.android.material.card.MaterialCardView>

@@ -6,13 +6,18 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
-import androidx.appcompat.app.AppCompatActivity;
 
+// Add/Edit Ingredient screen: one form used for both adding a new pantry item
+// and editing an existing one, with input validation before saving.
 public class AddEditIngredientActivity extends AppCompatActivity {
 
+    // Keys for the data passed in through the Intent when editing
     public static final String EXTRA_ITEM_ID = "extra_item_id";
     public static final String EXTRA_ITEM_NAME = "extra_item_name";
     public static final String EXTRA_ITEM_QUANTITY = "extra_item_quantity";
@@ -30,6 +35,11 @@ public class AddEditIngredientActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_edit_ingredient);
 
+        // Show a back arrow in the title bar
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
+
         dbHelper = new DatabaseHelper(this);
 
         editName = findViewById(R.id.editName);
@@ -39,11 +49,10 @@ public class AddEditIngredientActivity extends AppCompatActivity {
         textError = findViewById(R.id.textError);
         Button buttonSave = findViewById(R.id.buttonSave);
 
-        // Check if we were launched in EDIT mode (an item ID was passed in)
+        // Edit mode: an item ID was passed in, so pre-fill the form
         Intent intent = getIntent();
         if (intent.hasExtra(EXTRA_ITEM_ID)) {
             editingItemId = intent.getIntExtra(EXTRA_ITEM_ID, -1);
-            // Pre-fill the form with the existing item's data
             editName.setText(intent.getStringExtra(EXTRA_ITEM_NAME));
             editQuantity.setText(String.valueOf(intent.getDoubleExtra(EXTRA_ITEM_QUANTITY, 0)));
             editUnit.setText(intent.getStringExtra(EXTRA_ITEM_UNIT));
@@ -54,6 +63,13 @@ public class AddEditIngredientActivity extends AppCompatActivity {
         }
 
         buttonSave.setOnClickListener(v -> saveItem());
+    }
+
+    // Called when the back arrow in the title bar is tapped
+    @Override
+    public boolean onSupportNavigateUp() {
+        finish();
+        return true;
     }
 
     private void saveItem() {
@@ -101,7 +117,7 @@ public class AddEditIngredientActivity extends AppCompatActivity {
             dbHelper.updatePantryItem(editingItemId, name, quantity, unit, expiryToSave);
         }
 
-        finish(); // close this screen, return to MainActivity
+        finish(); // close this screen and return to the Pantry List
     }
 
     private void showError(String message) {
@@ -109,7 +125,7 @@ public class AddEditIngredientActivity extends AppCompatActivity {
         textError.setVisibility(View.VISIBLE);
     }
 
-    // Checks the date is a real date in yyyy-MM-dd format (e.g. rejects 2026-13-45)
+    // Checks the date is a real date in yyyy-MM-dd format (rejects e.g. 2026-13-45)
     private boolean isValidDate(String date) {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
         format.setLenient(false); // strict: don't quietly "fix" impossible dates

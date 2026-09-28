@@ -18,6 +18,7 @@
             android:layout_height="wrap_content"
             android:textSize="24sp"
             android:textStyle="bold"
+            android:textColor="@color/green_dark"
             tools:text="Cheese Omelette" />
 
         <TextView
@@ -26,13 +27,15 @@
             android:layout_marginTop="24dp"
             android:text="Ingredients"
             android:textSize="18sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:textColor="@color/green_primary" />
 
         <TextView
             android:id="@+id/textDetailIngredients"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
+            android:lineSpacingExtra="4dp"
             android:textSize="16sp"
             tools:text="• 2 unit egg" />
 
@@ -42,13 +45,15 @@
             android:layout_marginTop="24dp"
             android:text="Method"
             android:textSize="18sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:textColor="@color/green_primary" />
 
         <TextView
             android:id="@+id/textDetailInstructions"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
+            android:lineSpacingExtra="4dp"
             android:textSize="16sp"
             tools:text="Whisk eggs, pour into a hot pan..." />
 
