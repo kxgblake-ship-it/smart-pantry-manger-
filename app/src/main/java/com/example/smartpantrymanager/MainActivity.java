@@ -106,7 +106,7 @@ public class MainActivity extends AppCompatActivity implements PantryAdapter.OnI
             startActivity(new Intent(MainActivity.this, SuggestedRecipeActivity.class));
             return true;
         } else if (id == R.id.action_settings) {
-            // We'll wire this up once the Settings screen exists
+            startActivity(new Intent(MainActivity.this, SettingsActivity.class));
             return true;
         }
         return super.onOptionsItemSelected(item);
