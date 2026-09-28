@@ -1,22 +1,20 @@
 package com.example.smartpantrymanager;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
-import android.content.Intent;
-import androidx.activity.EdgeToEdge;
+
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.annotation.NonNull;
+
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.List;
 
+// Pantry List screen: shows every pantry item and lets the user add, edit and delete them.
 public class MainActivity extends AppCompatActivity implements PantryAdapter.OnItemActionListener {
 
     private DatabaseHelper dbHelper;
@@ -27,17 +25,12 @@ public class MainActivity extends AppCompatActivity implements PantryAdapter.OnI
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
+        setTitle("My Pantry");
 
         dbHelper = new DatabaseHelper(this);
 
-        // Seed the database with starter recipes on first run only
+        // Seed the starter recipes on first run only
         if (dbHelper.isRecipeTableEmpty()) {
             SeedData.populate(dbHelper);
         }
@@ -47,34 +40,33 @@ public class MainActivity extends AppCompatActivity implements PantryAdapter.OnI
         FloatingActionButton fabAddItem = findViewById(R.id.fabAddItem);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-        // Start with an empty list - loadPantryItems() will fill it in onResume()
         adapter = new PantryAdapter(dbHelper.getAllPantryItems(), this);
         recyclerView.setAdapter(adapter);
 
-        fabAddItem.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, AddEditIngredientActivity.class);
-            startActivity(intent);
-        });
+        // Add mode: open the form with no extras
+        fabAddItem.setOnClickListener(v ->
+                startActivity(new Intent(MainActivity.this, AddEditIngredientActivity.class)));
+
+        BottomNavHelper.setup(this, R.id.nav_pantry);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
 
-        // Read the Settings toggle every time this screen appears, so a change
-        // made in Settings shows up as soon as you come back
+        // Re-read the Settings toggle every time this screen appears,
+        // so a change made in Settings shows up as soon as we come back
         SharedPreferences prefs = getSharedPreferences(SettingsActivity.PREFS_NAME, MODE_PRIVATE);
         adapter.setHighlightExpiring(prefs.getBoolean(SettingsActivity.KEY_EXPIRY_ALERTS, false));
 
-        loadPantryItems(); // refresh every time this screen becomes visible
+        loadPantryItems();
     }
 
+    // Reloads the list from the database and shows/hides the empty-state message
     private void loadPantryItems() {
         List<PantryItem> items = dbHelper.getAllPantryItems();
         adapter.updateData(items);
 
-        // Show/hide the empty-state message depending on whether we have any items
         if (items.isEmpty()) {
             textEmptyState.setVisibility(View.VISIBLE);
             recyclerView.setVisibility(View.GONE);
@@ -84,6 +76,7 @@ public class MainActivity extends AppCompatActivity implements PantryAdapter.OnI
         }
     }
 
+    // Edit mode: pack the item's data into the Intent so the form can pre-fill itself
     @Override
     public void onEditClicked(PantryItem item) {
         Intent intent = new Intent(MainActivity.this, AddEditIngredientActivity.class);
@@ -98,24 +91,6 @@ public class MainActivity extends AppCompatActivity implements PantryAdapter.OnI
     @Override
     public void onDeleteClicked(PantryItem item) {
         dbHelper.deletePantryItem(item.getId());
-        loadPantryItems(); // refresh the list immediately after deleting
-    }
-    @Override
-    public boolean onCreateOptionsMenu(android.view.Menu menu) {
-        getMenuInflater().inflate(R.menu.main_menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull android.view.MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.action_suggested_recipes) {
-            startActivity(new Intent(MainActivity.this, SuggestedRecipeActivity.class));
-            return true;
-        } else if (id == R.id.action_settings) {
-            startActivity(new Intent(MainActivity.this, SettingsActivity.class));
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
+        loadPantryItems(); // refresh immediately after deleting
     }
 }

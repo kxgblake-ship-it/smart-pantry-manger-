@@ -2,4 +2,12 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- Smart Pantry palette -->
+    <color name="green_primary">#2E7D32</color>
+    <color name="green_dark">#1B5E20</color>
+    <color name="green_container">#C8E6C9</color>
+    <color name="orange_accent">#E65100</color>
+    <color name="background">#F6F8F5</color>
+    <color name="text_secondary">#5F6B60</color>
 </resources>
