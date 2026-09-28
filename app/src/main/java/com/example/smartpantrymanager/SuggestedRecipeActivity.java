@@ -1,8 +1,9 @@
 package com.example.smartpantrymanager;
 
+
 import android.os.Bundle;
 import android.view.View;
-
+import android.content.Intent;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -47,7 +48,9 @@ public class SuggestedRecipeActivity extends AppCompatActivity {
         }
 
         RecipeAdapter adapter = new RecipeAdapter(suggestedRecipes, recipe -> {
-            // We'll connect this to Recipe Detail screen next
+            Intent intent = new Intent(SuggestedRecipeActivity.this, RecipeDetailActivity.class);
+            intent.putExtra(RecipeDetailActivity.EXTRA_RECIPE_ID, recipe.getId());
+            startActivity(intent);
         });
         recyclerView.setAdapter(adapter);
 

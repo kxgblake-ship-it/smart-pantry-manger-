@@ -61,6 +61,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_RECIPE_INGREDIENTS);
         onCreate(db);
     }
+
     // ---------- CREATE ----------
     public long insertPantryItem(String name, double quantity, String unit, String expiryDate) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -117,6 +118,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.delete(TABLE_PANTRY, "id = ?", new String[]{String.valueOf(id)});
         db.close();
     }
+
     // ---------- Insert a recipe (used by seed data) ----------
     public long insertRecipe(String name, String instructions) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -186,7 +188,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     // ---------- Get all recipes WITH their ingredients attached ----------
-// This is the method the Suggested Recipes screen will actually call
+    // This is the method the Suggested Recipes screen will actually call
     public List<Recipe> getAllRecipesWithIngredients() {
         List<Recipe> recipes = getAllRecipes();
         for (Recipe recipe : recipes) {
@@ -207,6 +209,25 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         cursor.close();
         db.close();
         return isEmpty;
+    }
+
+    // ---------- Get a single recipe by its ID (used by the Recipe Detail screen) ----------
+    public Recipe getRecipeById(int recipeId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(TABLE_RECIPES, null,
+                "id = ?", new String[]{String.valueOf(recipeId)},
+                null, null, null);
+
+        Recipe recipe = null;
+        if (cursor.moveToFirst()) {
+            int id = cursor.getInt(cursor.getColumnIndexOrThrow("id"));
+            String name = cursor.getString(cursor.getColumnIndexOrThrow("name"));
+            String instructions = cursor.getString(cursor.getColumnIndexOrThrow("instructions"));
+            recipe = new Recipe(id, name, instructions);
+        }
+        cursor.close();
+        db.close();
+        return recipe; // null if no recipe with that ID exists
     }
 
 }
