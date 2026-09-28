@@ -15,27 +15,59 @@ public class IngredientMatcher {
         return normalized;
     }
 
-    // Normalizes a unit string for comparison: lowercase, trim only (no plural stripping - units like "ml" shouldn't be touched)
+    // Normalizes a unit string for comparison: lowercase, trim only
     public static String normalizeUnit(String unit) {
         if (unit == null) return "";
         return unit.trim().toLowerCase();
     }
 
+    // Maps the many ways a unit can be written onto one base unit:
+    // weight -> "g", volume -> "ml", countable things -> "unit"
+    // Anything we don't recognise is left as-is (so it only matches itself)
+    public static String baseUnit(String unit) {
+        String u = normalizeUnit(unit);
+        switch (u) {
+            case "g": case "gram": case "grams":
+            case "kg": case "kgs": case "kilogram": case "kilograms":
+                return "g";
+            case "ml": case "millilitre": case "millilitres":
+            case "milliliter": case "milliliters":
+            case "l": case "litre": case "litres": case "liter": case "liters":
+                return "ml";
+            case "unit": case "units": case "piece": case "pieces": case "pc": case "pcs":
+                return "unit";
+            default:
+                return u;
+        }
+    }
+
+    // Converts a quantity into its base unit (e.g. 0.5 kg -> 500 g, 2 l -> 2000 ml)
+    public static double toBaseQuantity(double quantity, String unit) {
+        String u = normalizeUnit(unit);
+        switch (u) {
+            case "kg": case "kgs": case "kilogram": case "kilograms":
+            case "l": case "litre": case "litres": case "liter": case "liters":
+                return quantity * 1000;
+            default:
+                return quantity;
+        }
+    }
+
     // Checks whether the pantry contains enough of a single required ingredient
     public static boolean pantryHasEnoughOf(RecipeIngredient required, List<PantryItem> pantryItems) {
-        String requiredNameNormalized = normalizeName(required.getIngredientName());
-        String requiredUnitNormalized = normalizeUnit(required.getUnit());
+        String requiredName = normalizeName(required.getIngredientName());
+        String requiredBaseUnit = baseUnit(required.getUnit());
+        double requiredAmount = toBaseQuantity(required.getRequiredQuantity(), required.getUnit());
 
         for (PantryItem pantryItem : pantryItems) {
-            String pantryNameNormalized = normalizeName(pantryItem.getName());
-            String pantryUnitNormalized = normalizeUnit(pantryItem.getUnit());
+            boolean namesMatch = requiredName.equals(normalizeName(pantryItem.getName()));
+            boolean unitsMatch = requiredBaseUnit.equals(baseUnit(pantryItem.getUnit()));
 
-            boolean namesMatch = requiredNameNormalized.equals(pantryNameNormalized);
-            boolean unitsMatch = requiredUnitNormalized.equals(pantryUnitNormalized);
-            boolean enoughQuantity = pantryItem.getQuantity() >= required.getRequiredQuantity();
-
-            if (namesMatch && unitsMatch && enoughQuantity) {
-                return true;
+            if (namesMatch && unitsMatch) {
+                double pantryAmount = toBaseQuantity(pantryItem.getQuantity(), pantryItem.getUnit());
+                if (pantryAmount >= requiredAmount) {
+                    return true;
+                }
             }
         }
         return false; // no matching pantry item found with enough quantity
@@ -57,7 +89,7 @@ public class IngredientMatcher {
         return true; // every single required ingredient was found in sufficient quantity
     }
 
-    // Counts how many required ingredients are MISSING (used for optional "Almost There" stretch feature)
+    // Counts how many required ingredients are MISSING (used for the optional "Almost There" stretch)
     public static int countMissingIngredients(Recipe recipe, List<PantryItem> pantryItems) {
         List<RecipeIngredient> required = recipe.getRequiredIngredients();
         if (required == null) return 0;
